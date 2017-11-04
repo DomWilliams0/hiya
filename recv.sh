@@ -19,7 +19,7 @@ parse_client_ip() {
 	CLIENT=$full_host
 
 	match=$(grep "^HOSTNAME=$CLIENT$" $PROFILE_DIR/* | head -n 1 | awk -F':' '{print $1}' | sed 's/.*\///')
-	if (($? == 0)); then
+	if [ ! -z "$match" ]; then
 		CLIENT=$match
 	fi
 }
