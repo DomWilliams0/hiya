@@ -41,8 +41,10 @@ listen() {
 			continue
 		fi
 
-		echo connection from $CLIENT_IP
-		# TODO read message
+		read -r msg <&3
+
+		# TODO resolve ip -> name if in profiles
+		notify-send "Message from $CLIENT_IP" "$(echo $msg | base64 -d | gunzip -c)"
 
 	done
 

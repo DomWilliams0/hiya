@@ -54,7 +54,7 @@ send_message() {
 	{
 		echo "$VERSION"
 		echo "MSG"
-		base64 # TODO gzip instead
+		gzip -c | base64
 	} | ncat --send-only $HOSTNAME $PORT
 	set +e
 	echo Message sent
