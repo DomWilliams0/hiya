@@ -52,8 +52,8 @@ send_message() {
 	# TODO gpg
 	set -e
 	{
-		echo "VERSION=$VERSION"
-		echo "MSG_TYPE=MSG"
+		echo "$VERSION"
+		echo "MSG"
 		base64 # TODO gzip instead
 	} | ncat --send-only $HOSTNAME $PORT
 	set +e
@@ -62,6 +62,8 @@ send_message() {
 
 # -----
 
-check_args
-load_profile
-send_message
+if [[ $0 == *"hiya"* ]]; then
+	check_args
+	load_profile
+	send_message
+fi
