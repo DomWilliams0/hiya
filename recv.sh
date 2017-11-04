@@ -4,12 +4,24 @@
 source hiya.sh
 
 HOST="0.0.0.0"
-CLIENT_IP=""
+CLIENT=""
 
 FIFO=/tmp/hiya-$(whoami)-fifo
 
 parse_client_ip() {
-	CLIENT_IP=$(echo $1 | sed -n 's/.*Connection from \([^\n]\+\):.*/\1/p')
+	CLIENT=$(echo $1 | sed -n 's/.*Connection from \([^\n]\+\):.*/\1/p')
+
+	full_host=$(getent hosts $CLIENT | awk '{print $NF}')
+	if (($? != 0)); then
+		exit 0
+	fi
+
+	CLIENT=$full_host
+
+	match=$(grep "^HOSTNAME=$CLIENT$" $PROFILE_DIR/* | head -n 1 | awk -F':' '{print $1}' | sed 's/.*\///')
+	if (($? == 0)); then
+		CLIENT=$match
+	fi
 }
 
 listen() {
@@ -43,8 +55,7 @@ listen() {
 
 		read -r msg <&3
 
-		# TODO resolve ip -> name if in profiles
-		notify-send "Message from $CLIENT_IP" "$(echo $msg | base64 -d | gunzip -c)"
+		notify-send "Message from $CLIENT" "$(echo $msg | base64 -d | gunzip -c)"
 
 	done
 
