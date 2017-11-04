@@ -11,13 +11,16 @@ else
 fi
 PROFILE_DIR=$CONFIG_DIR/profiles
 
+# constants
+VERSION="0.1"
+PORT=54810
+
 # profile
 # overriden by profile, if it exists
 HOSTNAME=$RECIPIENT
 GPG_KEY=""
 ALLOW_FILES="0"
 MAX_FILE_SIZE="100M"
-
 
 check_args() {
 	if [[ $ARG_COUNT != 1 ]]; then
@@ -45,7 +48,20 @@ load_profile() {
 	echo max_file_size = $MAX_FILE_SIZE
 }
 
+send_message() {
+	# TODO gpg
+	set -e
+	{
+		echo "VERSION=$VERSION"
+		echo "MSG_TYPE=MSG"
+		base64 # TODO gzip instead
+	} | ncat --send-only $HOSTNAME $PORT
+	set +e
+	echo Message sent
+}
+
 # -----
 
 check_args
 load_profile
+send_message
